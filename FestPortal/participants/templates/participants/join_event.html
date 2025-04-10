@@ -1,30 +1,30 @@
 {% extends 'base_dashboard.html' %}
+{% block title %}Join Event{% endblock %}
 
-{% block content %}
-<div class="container mt-4">
-  <h3 class="mb-3">Join an Event</h3>
+{% block dashboard_content %}
+<div class="bg-white p-6 rounded shadow-sm">
+  <h2 class="text-xl font-semibold mb-4">Available Events</h2>
 
   {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
   {% endif %}
 
   {% if available_events %}
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-group mb-3">
-        <label for="event">Select Event</label>
-        <select name="event_id" id="event" class="form-select" required>
-          {% for event in available_events %}
-            <option value="{{ event.id }}">{{ event.sport.name }} - {{ event.gender }}</option>
-          {% endfor %}
-        </select>
+  <form method="POST" class="space-y-4">
+    {% csrf_token %}
+    <div class="grid gap-4">
+      {% for event in available_events %}
+      <div class="flex justify-between items-center border rounded p-3">
+        <span>{{ event.sport.name }} - {{ event.gender }} (Max Team Size: {{ event.max_team_size }})</span>
+        <button name="event_id" value="{{ event.id }}" class="btn btn-success btn-sm">Join</button>
       </div>
-      <button type="submit" class="btn btn-primary">Join Event</button>
-    </form>
+      {% endfor %}
+    </div>
+  </form>
   {% else %}
-    <p class="text-muted">No eligible events left to join.</p>
+  <p class="text-muted">No eligible events available at the moment.</p>
   {% endif %}
 </div>
 {% endblock %}

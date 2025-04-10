@@ -1,9 +1,46 @@
-<h3>Declared Results</h3>
-<form method="get">
-    <input type="text" name="sport" placeholder="Filter by sport">
-    <button type="submit">Filter</button>
-</form>
+{% extends 'base_dashboard.html' %}
+{% block title %}Match Results{% endblock %}
 
-{% for match in matches %}
-    <p><strong>{{ match.event.sport.name }}:</strong> {{ match.team1 }} vs {{ match.team2 }} - Result: {{ match.status }}</p>
-{% endfor %}
+{% block dashboard_content %}
+<div class="bg-white p-6 rounded shadow-sm space-y-6">
+  <h2 class="text-xl font-semibold">Declared Match Results</h2>
+
+  <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+    <input type="text" name="sport" class="form-control" placeholder="Sport" />
+    <input type="text" name="gender" class="form-control" placeholder="Gender" />
+    <select name="status" class="form-select">
+      <option value="Completed">Completed</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Event</th>
+          <th>Teams</th>
+          <th>Result</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for match in matches %}
+        <tr>
+          <td>{{ match.event.sport.name }} ({{ match.event.gender }})</td>
+          <td>
+            {% if match.team1 and match.team2 %}
+              {{ match.team1.college.name }} vs {{ match.team2.college.name }}
+            {% else %}
+              Multiple Teams / Individuals
+            {% endif %}
+          </td>
+          <td>{{ match.result_summary }}</td>
+          <td>{{ match.start_time|date:"M d, H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

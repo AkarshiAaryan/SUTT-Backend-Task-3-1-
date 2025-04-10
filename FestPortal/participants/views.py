@@ -351,3 +351,20 @@ def participant_match_results(request):
     return render(request, 'participants/participant_match_results.html', {
         'matches': matches
     })
+
+@organizer_required
+def update_match_result(request, match_id):
+    match = get_object_or_404(Match, pk=match_id)
+
+    if request.method == 'POST':
+        form = MatchResultForm(request.POST, instance=match)
+        if form.is_valid():
+            match = form.save(commit=False)
+            match.status = 'Completed'
+            match.save()
+            messages.success(request, "Result updated successfully.")
+            return redirect('match_detail', match_id=match.id)
+    else:
+        form = MatchResultForm(instance=match)
+
+    return render(request, 'participants/match_result.html', {'form': form, 'match': match})
