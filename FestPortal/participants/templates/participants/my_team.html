@@ -1,0 +1,14 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4>My Team – {{ event.sport.name }} ({{ event.gender }})</h4>
+  <ul class="list-group mt-3">
+    {% for m in members %}
+      <li class="list-group-item">
+        {{ m.participant.name }} ({{ m.participant.email }})
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'participant_dashboard' %}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

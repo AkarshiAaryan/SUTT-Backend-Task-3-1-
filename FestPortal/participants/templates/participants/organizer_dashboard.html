@@ -1,0 +1,82 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Organizer Dashboard</h2>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4 text-center">
+        <h5>Total Participants</h5>
+        <h2>{{ total_participants }}</h2>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4 text-center">
+        <h5>Colleges Participated</h5>
+        <h2>{{ total_colleges }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h4 class="mb-3">Participants</h4>
+  <input class="form-control mb-2" id="participantSearch" placeholder="Search participants...">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Gender</th>
+        <th>College</th>
+      </tr>
+    </thead>
+    <tbody id="participantTable">
+      {% for p in participants %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ p.email }}</td>
+        <td>{{ p.gender }}</td>
+        <td>{{ p.college.name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h4 class="mb-3">Colleges</h4>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>College Name</th>
+        <th>No. of Participants</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for college in colleges %}
+      <tr>
+        <td>{{ college.name }}</td>
+        <td>{{ college.num_participants }}</td>
+        <td><a class="btn btn-primary btn-sm" href="{% url 'college_participants' college.id %}">View Participants</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const searchInput = document.getElementById('participantSearch');
+  const tableRows = document.querySelectorAll('#participantTable tr');
+
+  searchInput.addEventListener('input', () => {
+    const value = searchInput.value.toLowerCase();
+    tableRows.forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}

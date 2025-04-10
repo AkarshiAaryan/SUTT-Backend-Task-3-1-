@@ -1,0 +1,19 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4>Team Players – {{ team.event.sport.name }} ({{ team.event.gender }})</h4>
+  <p><strong>College:</strong> {{ team.college.name }}</p>
+
+  {% if members %}
+    <ul class="list-group mt-3">
+      {% for m in members %}
+        <li class="list-group-item">{{ m.participant.name }} ({{ m.participant.email }})</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No members in this team yet.</p>
+  {% endif %}
+
+  <a href="{% url 'organizer_teams' %}" class="btn btn-secondary mt-3">Back to Teams</a>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Match Detail</h3>
+  <div class="card p-3 shadow-sm mb-4">
+    <h5>{{ match.event.sport.name }} ({{ match.event.gender }})</h5>
+    <p><strong>Start:</strong> {{ match.start_time|date:"M d, H:i" }}</p>
+    <p><strong>End:</strong> {{ match.end_time|date:"M d, H:i" }}</p>
+    <p><strong>Location:</strong> {{ match.location }}</p>
+    <p><strong>Status:</strong> {{ match.status }}</p>
+    <p><strong>Teams:</strong> {{ match.team1.college.name }} vs {{ match.team2.college.name }}</p>
+
+    {% if match.result %}
+      <p><strong>Result:</strong> {{ match.result }}</p>
+      <p><strong>Score:</strong> {{ match.team1.college.name }} - {{ match.team1_score }},
+         {{ match.team2.college.name }} - {{ match.team2_score }}</p>
+    {% else %}
+      <p class="text-muted">Result not declared yet.</p>
+    {% endif %}
+
+    <a href="{% url 'update_match_result' match.id %}" class="btn btn-warning mt-3">
+      📝 Update Match Result
+    </a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h5>{{ match.team1.college.name }} Players</h5>
+      <ul class="list-group">
+        {% for player in team1_players %}
+        <li class="list-group-item">{{ player.participant.name }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h5>{{ match.team2.college.name }} Players</h5>
+      <ul class="list-group">
+        {% for player in team2_players %}
+        <li class="list-group-item">{{ player.participant.name }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

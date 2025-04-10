@@ -1,0 +1,38 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4>Match Schedule</h4>
+
+  <!-- Filters -->
+  <form method="get" class="row g-3 mb-3">
+    <div class="col-md-3"><input type="text" name="sport" class="form-control" placeholder="Sport"></div>
+    <div class="col-md-3"><input type="text" name="gender" class="form-control" placeholder="Gender"></div>
+    <div class="col-md-3"><input type="text" name="college" class="form-control" placeholder="College"></div>
+    <div class="col-md-3"><select name="status" class="form-select"><option value="">Status</option><option>Scheduled</option><option>Completed</option></select></div>
+    <div class="col-md-3"><button type="submit" class="btn btn-primary">Apply Filters</button></div>
+  </form>
+
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Teams</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for match in matches %}
+      <tr>
+        <td>{{ match.event.sport.name }} ({{ match.event.gender }})</td>
+        <td>{{ match.team1.college.name }} vs {{ match.team2.college.name }}</td>
+        <td>{{ match.start_time|date:"M d, H:i" }} - {{ match.end_time|date:"H:i" }}</td>
+        <td>{{ match.status }}</td>
+        <td><a href="{% url 'match_detail' match.id %}" class="btn btn-sm btn-outline-info">View</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

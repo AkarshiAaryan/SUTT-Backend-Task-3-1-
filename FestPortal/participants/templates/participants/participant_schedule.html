@@ -1,0 +1,17 @@
+<h2>Your Upcoming Matches</h2>
+<ul>
+    {% for match in my_events %}
+        <li>{{ match.event }} | {{ match.start_time }} → {{ match.end_time }} @ {{ match.location }}</li>
+    {% empty %}
+        <li>No upcoming matches for you.</li>
+    {% endfor %}
+</ul>
+
+<h2>🏫 Other Matches for Your College</h2>
+<ul>
+    {% for match in college_matches %}
+        <li>{{ match.event }} | {{ match.start_time }} → {{ match.end_time }} @ {{ match.location }}</li>
+    {% empty %}
+        <li>No other upcoming matches for your college.</li>
+    {% endfor %}
+</ul>

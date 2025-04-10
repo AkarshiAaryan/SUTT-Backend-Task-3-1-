@@ -1,0 +1,46 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>All Teams</h3>
+
+  <!-- Filters -->
+  <form method="get" class="row g-3 my-3">
+    <div class="col-md-3">
+      <input type="text" name="sport" class="form-control" placeholder="Filter by Sport" value="{{ request.GET.sport }}">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="gender" class="form-control" placeholder="Filter by Gender" value="{{ request.GET.gender }}">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="college" class="form-control" placeholder="Filter by College" value="{{ request.GET.college }}">
+    </div>
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </div>
+  </form>
+
+  <table class="table table-bordered table-hover mt-3">
+    <thead>
+      <tr>
+        <th>Sport</th>
+        <th>Event Gender</th>
+        <th>College</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team in teams %}
+      <tr>
+        <td>{{ team.event.sport.name }}</td>
+        <td>{{ team.event.gender }}</td>
+        <td>{{ team.college.name }}</td>
+        <td>
+          <a href="{% url 'team_players' team.id %}" class="btn btn-sm btn-outline-primary">View Players</a>
+          <a href="{% url 'college_events' team.college.id %}" class="btn btn-sm btn-outline-secondary">College Events</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

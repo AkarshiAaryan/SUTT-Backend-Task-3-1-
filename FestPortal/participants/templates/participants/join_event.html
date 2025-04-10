@@ -1,0 +1,30 @@
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-3">Join an Event</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if available_events %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group mb-3">
+        <label for="event">Select Event</label>
+        <select name="event_id" id="event" class="form-select" required>
+          {% for event in available_events %}
+            <option value="{{ event.id }}">{{ event.sport.name }} - {{ event.gender }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Join Event</button>
+    </form>
+  {% else %}
+    <p class="text-muted">No eligible events left to join.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}My Match Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-4">Match Results</h3>
+
+  {% if matches %}
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Event</th>
+          <th>Match Format</th>
+          <th>Teams / Participants</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for match in matches %}
+        <tr>
+          <td>{{ match.event.sport.name }} ({{ match.event.gender }})</td>
+          <td>{{ match.get_format_display }}</td>
+          <td>
+            {% if match.format == 'teamvsteam' %}
+              {{ match.team1.college.name }} vs {{ match.team2.college.name }}
+            {% elif match.format == 'individualvindividual' %}
+              {% for person in match.individuals.all %}
+                {{ person.name }}{% if not forloop.last %} vs {% endif %}
+              {% endfor %}
+            {% elif match.format == 'team_multi' %}
+              {% for team in match.teams.all %}
+                {{ team.college.name }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% elif match.format == 'individual_multi' %}
+              {% for person in match.individuals.all %}
+                {{ person.name }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% endif %}
+          </td>
+          <td>{{ match.start_time|date:"M d, H:i" }} - {{ match.end_time|date:"H:i" }}</td>
+          <td><span class="badge bg-success">{{ match.status }}</span></td>
+          <td>
+            <a href="{% url 'match_detail' match.id %}" class="btn btn-sm btn-outline-info">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">No completed matches found for your events or college.</div>
+  {% endif %}
+</div>
+{% endblock %}
+

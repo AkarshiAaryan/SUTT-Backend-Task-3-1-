@@ -1,0 +1,74 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Welcome, {{ user.name }}</h2>
+
+  <!-- Participant Info -->
+  <div class="card mb-4 shadow-sm p-3">
+    <h5>My Details</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+      <li class="list-group-item"><strong>Gender:</strong> {{ user.gender }}</li>
+      <li class="list-group-item"><strong>DOB:</strong> {{ user.dob }}</li>
+      <li class="list-group-item"><strong>Mobile:</strong> {{ user.mobile }}</li>
+      <li class="list-group-item"><strong>College:</strong> {{ user.college.name }}</li>
+    </ul>
+  </div>
+
+  <!-- Events Joined -->
+  <div class="card mb-4 shadow-sm p-3">
+    <h5 class="mb-3">Events You're Participating In</h5>
+  <div class="card mb-4 shadow-sm p-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <a href="{% url 'participant_schedule' %}" class="btn btn-sm btn-success">
+      📅 My Schedule
+      </a>
+      <a href="{% url 'participant_match_results' %}" class="btn btn-outline-success">View My Match Results</a>
+    </div>
+    {% if events_joined %}
+      <ul class="list-group">
+        {% for event in events_joined %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ event.sport.name }} - {{ event.gender }}
+            <a href="{% url 'view_my_team' event.id%}" class="btn btn-sm btn-outline-primary">View Team</a>  <!-- Link to be connected -->
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">You're not part of any event yet.</p>
+    {% endif %}
+    <a href="{% url 'join_event' %}" class="btn btn-primary mt-3">Join an Event</a>
+  </div>
+
+  <!-- College Players -->
+  <div class="card shadow-sm p-3">
+    <h5 class="mb-3">Other Participants from {{ user.college.name }}</h5>
+    {% if college_mates %}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mate in college_mates %}
+          <tr>
+            <td>{{ mate.name }}</td>
+            <td>{{ mate.gender }}</td>
+            <td>{{ mate.email }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">No other participants from your college yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

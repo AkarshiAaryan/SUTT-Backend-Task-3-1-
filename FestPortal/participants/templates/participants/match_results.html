@@ -1,0 +1,9 @@
+<h3>Declared Results</h3>
+<form method="get">
+    <input type="text" name="sport" placeholder="Filter by sport">
+    <button type="submit">Filter</button>
+</form>
+
+{% for match in matches %}
+    <p><strong>{{ match.event.sport.name }}:</strong> {{ match.team1 }} vs {{ match.team2 }} - Result: {{ match.status }}</p>
+{% endfor %}
