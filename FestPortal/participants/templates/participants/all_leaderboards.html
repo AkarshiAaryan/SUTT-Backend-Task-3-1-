@@ -1,0 +1,9 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+<h2>All Leaderboards</h2>
+<ul>
+  {% for l in leaderboards %}
+  <li><a href="{% url 'view_leaderboard' l.id %}">{{ l.name }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base_dashboard.html' %}
 {% block title %}Match Results{% endblock %}
 
 {% block dashboard_content %}
@@ -6,17 +6,17 @@
   <h2 class="text-xl font-semibold">Declared Match Results</h2>
 
   <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-    <input type="text" name="sport" class="form-control" placeholder="Sport" />
-    <input type="text" name="gender" class="form-control" placeholder="Gender" />
-    <select name="status" class="form-select">
+    <input type="text" name="sport" class="form-input w-full bg-gray-700 text-white border-cyan-500" placeholder="Sport">
+    <input type="text" name="gender" class="form-input w-full bg-gray-700 text-white border-cyan-500" placeholder="Gender">
+    <select name="status" class="form-select w-full bg-gray-700 text-white border-cyan-500">
       <option value="Completed">Completed</option>
     </select>
-    <button type="submit" class="btn btn-primary">Filter</button>
+    <button type="submit" class="button primary w-full">Filter</button>
   </form>
 
   <div class="table-responsive">
     <table class="table table-bordered table-hover">
-      <thead class="table-dark">
+      <thead>
         <tr>
           <th>Event</th>
           <th>Teams</th>
@@ -31,6 +31,8 @@
           <td>
             {% if match.team1 and match.team2 %}
               {{ match.team1.college.name }} vs {{ match.team2.college.name }}
+            {% elif match.teams.all %}
+              {% for team in match.teams.all %}{{ team.college.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
             {% else %}
               Multiple Teams / Individuals
             {% endif %}

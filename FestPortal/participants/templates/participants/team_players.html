@@ -1,19 +1,23 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base_dashboard.html' %}
+
 {% block content %}
 <div class="container mt-4">
-  <h4>Team Players – {{ team.event.sport.name }} ({{ team.event.gender }})</h4>
+  <h4 class="text-2xl font-semibold text-gray-800 mb-4">Team Players – {{ team.event.sport.name }} ({{ team.event.gender }})</h4>
   <p><strong>College:</strong> {{ team.college.name }}</p>
 
   {% if members %}
-    <ul class="list-group mt-3">
+    <ul class="space-y-4 mt-3">
       {% for m in members %}
-        <li class="list-group-item">{{ m.participant.name }} ({{ m.participant.email }})</li>
+        <li class="bg-gray-50 p-4 rounded shadow-sm border border-gray-200">
+          <div class="font-medium text-gray-800">{{ m.participant.name }}</div>
+          <div class="text-sm text-gray-600">{{ m.participant.email }}</div>
+        </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>No members in this team yet.</p>
+    <p class="text-gray-500 italic">No members in this team yet.</p>
   {% endif %}
 
-  <a href="{% url 'organizer_teams' %}" class="btn btn-secondary mt-3">Back to Teams</a>
+  <a href="{% url 'organizer_teams' %}" class="inline-block mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">Back to Teams</a>
 </div>
 {% endblock %}

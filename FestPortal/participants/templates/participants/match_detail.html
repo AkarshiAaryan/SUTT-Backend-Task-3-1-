@@ -1,51 +1,51 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base_dashboard.html' %}
 {% block title %}Match Detail{% endblock %}
 
-{% block dashboard_content %}
-<div class="bg-white p-6 rounded shadow-sm space-y-6">
-
-  <div class="flex justify-between items-center">
-    <h2 class="text-xl font-semibold">Match Detail</h2>
-    <a href="{% url 'update_match_result' match.id %}" class="btn btn-outline-warning">Update Result</a>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <p><strong>Sport:</strong> {{ match.event.sport.name }}</p>
-      <p><strong>Gender:</strong> {{ match.event.gender }}</p>
-      <p><strong>Time:</strong> {{ match.start_time|date:"M d, H:i" }} - {{ match.end_time|date:"H:i" }}</p>
-      <p><strong>Location:</strong> {{ match.location }}</p>
-      <p><strong>Status:</strong> {{ match.status }}</p>
+{% block content %}
+<div class="container mt-4">
+  <div class="bg-white p-4 rounded shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="h5 mb-0">Match Detail</h2>
+      <a href="{% url 'update_match_result' match.id %}" class="button primary">Update Result</a>
     </div>
-    <div>
-      {% if match.team1 and match.team2 %}
-        <p><strong>Teams:</strong> {{ match.team1.college.name }} vs {{ match.team2.college.name }}</p>
-        <h4 class="mt-3 text-md font-semibold">Players</h4>
-        <ul>
-          {% for player in team1_players %}
-            <li>{{ player.participant.name }} ({{ match.team1.college.name }})</li>
-          {% endfor %}
-          {% for player in team2_players %}
-            <li>{{ player.participant.name }} ({{ match.team2.college.name }})</li>
-          {% endfor %}
-        </ul>
-      {% elif match.teams.all %}
-        <p><strong>Teams:</strong></p>
-        <ul>
-          {% for team in match.teams.all %}
-            <li>{{ team.college.name }}</li>
-          {% endfor %}
-        </ul>
-      {% elif match.individuals.all %}
-        <p><strong>Participants:</strong></p>
-        <ul>
-          {% for person in match.individuals.all %}
-            <li>{{ person.name }} ({{ person.college.name }})</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
+
+    <div class="flex flex-wrap">
+      <div class="w-full md:w-1/2">
+        <p><strong>Sport:</strong> {{ match.event.sport.name }}</p>
+        <p><strong>Gender:</strong> {{ match.event.gender }}</p>
+        <p><strong>Time:</strong> {{ match.start_time|date:"M d, H:i" }} – {{ match.end_time|date:"H:i" }}</p>
+        <p><strong>Location:</strong> {{ match.location }}</p>
+        <p><strong>Status:</strong> {{ match.status }}</p>
+      </div>
+      <div class="w-full md:w-1/2">
+        {% if match.team1 and match.team2 %}
+          <p><strong>Teams:</strong> {{ match.team1.college.name }} vs {{ match.team2.college.name }}</p>
+          <h6 class="mt-3">Players</h6>
+          <ul>
+            {% for player in team1_players %}
+              <li>{{ player.participant.name }} ({{ match.team1.college.name }})</li>
+            {% endfor %}
+            {% for player in team2_players %}
+              <li>{{ player.participant.name }} ({{ match.team2.college.name }})</li>
+            {% endfor %}
+          </ul>
+        {% elif match.teams.all %}
+          <p><strong>Teams:</strong></p>
+          <ul>
+            {% for team in match.teams.all %}
+              <li>{{ team.college.name }}</li>
+            {% endfor %}
+          </ul>
+        {% elif match.individuals.all %}
+          <p><strong>Participants:</strong></p>
+          <ul>
+            {% for person in match.individuals.all %}
+              <li>{{ person.name }} ({{ person.college.name }})</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
     </div>
   </div>
-
 </div>
 {% endblock %}

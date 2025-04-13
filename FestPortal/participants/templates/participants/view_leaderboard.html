@@ -1,0 +1,14 @@
+{% extends "participants/base_dashboard.html" %}
+{% block content %}
+<h2>{{ leaderboard.name }} Leaderboard</h2>
+<table>
+  <tr><th>Rank</th><th>College</th><th>Points</th></tr>
+  {% for entry in leaderboard.entries.all %}
+  <tr>
+    <td>{{ entry.rank }}</td>
+    <td>{{ entry.college.name }}</td>
+    <td>{{ entry.points }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

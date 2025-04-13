@@ -1,20 +1,25 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base.html' %}
+
 {% block content %}
-<div class="container mt-4">
-  <h4>Events Participated – {{ college.name }}</h4>
+<section class="wrapper style1">
+  <div class="inner">
+    <header class="major">
+      <h2>Events Participated – {{ college.name }}</h2>
+    </header>
 
-  {% if teams %}
-    <ul class="list-group mt-3">
-      {% for team in teams %}
-        <li class="list-group-item">
-          {{ team.event.sport.name }} ({{ team.event.gender }})
-        </li>
-      {% endfor %}
+    {% if teams %}
+      <ul class="alt">
+        {% for team in teams %}
+          <li>{{ team.event.sport.name }} ({{ team.event.gender }})</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>This college is not participating in any events.</p>
+    {% endif %}
+
+    <ul class="actions">
+      <li><a href="{% url 'organizer_teams' %}" class="button">Back to Teams</a></li>
     </ul>
-  {% else %}
-    <p>This college is not participating in any events.</p>
-  {% endif %}
-
-  <a href="{% url 'organizer_teams' %}" class="btn btn-secondary mt-3">Back to Teams</a>
-</div>
+  </div>
+</section>
 {% endblock %}

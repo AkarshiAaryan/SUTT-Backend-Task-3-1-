@@ -1,0 +1,45 @@
+{% extends 'participants/base.html' %}
+{% load static %}
+
+{% block title %}Welcome to Sports Fest{% endblock %}
+
+{% block content %}
+<!-- Banner -->
+<section id="banner">
+  <div class="inner">
+    <h2>🏆 Welcome to the Sports Fest Portal</h2>
+    <p>Join, compete, and track your college’s sports journey.</p>
+    <ul class="actions special">
+      <li><a href="{% url 'account_login' %}" class="button primary">Login with Google</a></li>
+      <li><a href="{% url 'account_signup' %}" class="button">Sign Up</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="wrapper style1 special">
+  <div class="inner">
+    <header class="major">
+      <h2>💡 Portal Features</h2>
+      <p>Explore all you can do with the Sports Fest platform.</p>
+    </header>
+    <div class="flex flex-3">
+      <article>
+        <span class="icon solid fa-calendar-alt"></span>
+        <h3>📅 Schedule</h3>
+        <p>Track your upcoming matches & events with real-time updates.</p>
+      </article>
+      <article>
+        <span class="icon solid fa-bullseye"></span>
+        <h3>🎯 Results</h3>
+        <p>See rankings and scores across all sports and colleges.</p>
+      </article>
+      <article>
+        <span class="icon solid fa-comments"></span>
+        <h3>📢 Feedback</h3>
+        <p>Submit suggestions or report issues to the organizers instantly.</p>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -2,8 +2,27 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import CompleteProfileForm
+from functools import wraps
+
+#Landing View
+
+def home(request):
+    return render(request, 'participants/home.html')
+
 
 #Partcipant views
+
+def complete_profile_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        user = request.user
+        if user.is_authenticated and user.is_participant:
+            if not user.is_profile_complete():
+                return redirect('complete_profile')  # URL name of the profile form
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
 @login_required
 def complete_profile(request):
     user = request.user
@@ -26,30 +45,26 @@ def complete_profile(request):
 
     return render(request, 'participants/complete_profile.html', {'form': form})
 
-from .models import TeamMembership
 @login_required
+@complete_profile_required
 def participant_dashboard(request):
     user = request.user
-    if user.is_organizer:
-        messages.warning(request, "Organizers are not allowed on the participant dashboard.")
-        return redirect('organizer_dashboard')
-    user = request.user
-    college_mates = User.objects.filter(college=user.college, is_organizer=False).exclude(id=user.id)
 
-    memberships = TeamMembership.objects.filter(participant=user).select_related('team__event')
-    events_joined = [m.team.event for m in memberships]
+    # Events the user is part of
+    participant_teams = Team.objects.filter(teammembership__participant=user)
+    events_joined = Event.objects.filter(team__in=participant_teams).distinct()
+
+    # Get all teams from the same college
+    college_teams = Team.objects.filter(college=user.college).exclude(teammembership__participant=user).distinct()
 
     return render(request, 'participants/participant_dashboard.html', {
         'user': user,
         'events_joined': events_joined,
-        'college_mates': college_mates,
-        }
-    )
-
-from django.contrib import messages
-from .models import Event, Team, TeamMembership
+        'college_teams': college_teams,
+    })
 
 @login_required
+@complete_profile_required
 def join_event(request):
     user = request.user
 
@@ -81,15 +96,16 @@ def join_event(request):
             return redirect('join_event')
 
         # Add to team
-        TeamMembership.objects.create(team=team, participant=user)
-        messages.success(request, f"You've joined {event.sport.name} - {event.gender}")
-        return redirect('participant_dashboard')
+        TeamMembership.objects.create(team=team, participant=user, is_approved=False)
+        messages.success(request, f"Join request sent to team captain of {event.sport.name} - {event.gender}")
 
     return render(request, 'participants/join_event.html', {
         'available_events': available_events,
     })
 
+
 @login_required
+@complete_profile_required
 def view_my_team(request, event_id):
     user = request.user
 
@@ -107,9 +123,9 @@ def view_my_team(request, event_id):
         'members': members,
     })
 
-from .models import Match, TeamMembership
 
 @login_required
+@complete_profile_required
 def participant_schedule(request):
     user = request.user
     if user.is_organizer:
@@ -260,6 +276,26 @@ from django.contrib import messages
 from .models import Match, Event, Team, User
 from django.contrib.auth.decorators import login_required
 
+from .forms import MatchCreateForm
+
+
+@organizer_required
+def create_match(request):
+    if request.method == 'POST':
+        form = MatchCreateForm(request.POST)
+        if form.is_valid():
+            match = form.save(commit=False)
+            match.save()  # Save first to generate match.id
+            form.save_m2m()  # Now save many-to-many fields
+            messages.success(request, "Match created successfully.")
+            return redirect('match_list')
+    else:
+        form = MatchCreateForm()
+    return render(request, 'participants/create_match.html', {'form': form})
+
+
+
+
 @organizer_required
 def upload_matches_excel(request):
     if request.method == 'POST' and request.FILES.get('file'):
@@ -352,12 +388,14 @@ def participant_match_results(request):
         'matches': matches
     })
 
+from .forms import MatchScoreForm
 @organizer_required
 def update_match_result(request, match_id):
     match = get_object_or_404(Match, pk=match_id)
+    sport = match.event.sport.name
 
     if request.method == 'POST':
-        form = MatchResultForm(request.POST, instance=match)
+        form = MatchScoreForm(request.POST, sport=sport, instance=match)
         if form.is_valid():
             match = form.save(commit=False)
             match.status = 'Completed'
@@ -367,4 +405,144 @@ def update_match_result(request, match_id):
     else:
         form = MatchResultForm(instance=match)
 
-    return render(request, 'participants/match_result.html', {'form': form, 'match': match})
+    return render(request, 'participants/update_match_result.html', {'form': form, 'match': match})
+
+#Feedback:
+from .forms import FeedbackForm
+
+@login_required
+def give_feedback(request):
+    if request.user.is_organizer:
+        return redirect('organizer_dashboard')
+
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, request.FILES)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.participant = request.user
+            feedback.save()
+            messages.success(request, "Feedback submitted successfully!")
+            return redirect('participant_dashboard')
+    else:
+        form = FeedbackForm()
+
+    return render(request, 'participants/give_feedback.html', {'form': form})
+
+
+from .models import Feedback
+@organizer_required
+
+def view_feedbacks(request):
+    feedbacks = Feedback.objects.select_related('participant').order_by('-created_at')
+    return render(request, 'participants/view_feedbacks.html', {'feedbacks': feedbacks})
+
+
+@login_required
+@organizer_required
+def remove_player(request, user_id, event_id):
+    player = get_object_or_404(User, id=user_id)
+    event = get_object_or_404(Event, id=event_id)
+    team = Team.objects.filter(college=player.college, event=event).first()
+    if team and player in team.members.all():
+        team.members.remove(player)
+    return redirect('organizer_dashboard')
+
+
+@login_required
+@organizer_required
+def ban_player(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.is_banned = True
+    user.save()
+    return redirect('organizer_dashboard')
+
+from .models import Leaderboard, LeaderboardEntry
+from .forms import LeaderboardForm, LeaderboardEntryForm
+from django.contrib.admin.views.decorators import staff_member_required
+import openpyxl
+
+@staff_member_required
+def create_leaderboard(request):
+    if request.method == 'POST':
+        form = LeaderboardForm(request.POST, request.FILES)
+        if form.is_valid():
+            leaderboard = form.save()
+            if leaderboard.uploaded_excel:
+                wb = openpyxl.load_workbook(leaderboard.uploaded_excel)
+                sheet = wb.active
+                for row in sheet.iter_rows(min_row=2, values_only=True):
+                    college_name, points, rank = row
+                    from colleges.models import College
+                    college = College.objects.get(name=college_name.strip())
+                    LeaderboardEntry.objects.create(
+                        leaderboard=leaderboard,
+                        college=college,
+                        points=int(points),
+                        rank=int(rank)
+                    )
+            return redirect('view_leaderboard', leaderboard_id=leaderboard.id)
+    else:
+        form = LeaderboardForm()
+    return render(request, 'participants/create_leaderboard.html', {'form': form})
+
+@organizer_required
+def add_entry(request, leaderboard_id):
+    leaderboard = get_object_or_404(Leaderboard, id=leaderboard_id)
+    if request.method == 'POST':
+        form = LeaderboardEntryForm(request.POST)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.leaderboard = leaderboard
+            entry.save()
+            return redirect('view_leaderboard', leaderboard_id=leaderboard.id)
+    else:
+        form = LeaderboardEntryForm()
+    return render(request, 'participants/add_entry.html', {'form': form, 'leaderboard': leaderboard})
+
+@login_required
+def view_leaderboard(request, leaderboard_id):
+    leaderboard = get_object_or_404(Leaderboard, id=leaderboard_id)
+    return render(request, 'participants/view_leaderboard.html', {'leaderboard': leaderboard})
+
+@login_required
+def all_leaderboards(request):
+    leaderboards = Leaderboard.objects.all().order_by('-created_at')
+    return render(request, 'participants/all_leaderboards.html', {'leaderboards': leaderboards})
+
+@organizer_required
+def set_team_captain(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+    members = TeamMembership.objects.filter(team=team).select_related('participant')
+
+    if request.method == 'POST':
+        captain_id = request.POST.get('captain_id')
+        captain = get_object_or_404(User, id=captain_id)
+        team.captain = captain
+        team.save()
+        messages.success(request, f"{captain.name} is now the captain of the team.")
+        return redirect('team_players', team_id=team.id)
+
+    return render(request, 'participants/set_captain.html', {
+        'team': team,
+        'members': members,
+    })
+
+
+from .models import TeamMembership
+
+@login_required
+def approve_requests(request):
+    user = request.user
+    captain_memberships = TeamMembership.objects.filter(participant=user, is_captain=True)
+    teams = [tm.team for tm in captain_memberships]
+
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id')
+        membership = TeamMembership.objects.get(id=member_id)
+        membership.is_approved = True
+        membership.save()
+        return redirect('approve_requests')
+
+    pending = TeamMembership.objects.filter(team__in=teams, is_approved=False)
+
+    return render(request, 'participants/approve_requests.html', {'pending_memberships': pending})

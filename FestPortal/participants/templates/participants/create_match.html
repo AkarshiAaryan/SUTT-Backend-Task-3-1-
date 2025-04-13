@@ -1,0 +1,45 @@
+{% extends 'participants/base_dashboard.html' %}
+
+{% block title %}Create Match{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+  <h2 class="text-2xl font-semibold mb-4">Create New Match</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button primary">Create Match</button>
+  </form>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const formatSelect = document.getElementById('id_format');
+    const team1Field = document.getElementById('id_team1').closest('p');
+    const team2Field = document.getElementById('id_team2').closest('p');
+    const teamsField = document.getElementById('id_teams').closest('p');
+    const individualsField = document.getElementById('id_individuals').closest('p');
+
+    function updateVisibility() {
+        const value = formatSelect.options[formatSelect.selectedIndex].text;
+        team1Field.style.display = 'none';
+        team2Field.style.display = 'none';
+        teamsField.style.display = 'none';
+        individualsField.style.display = 'none';
+
+        if (value === 'Team vs Team') {
+            team1Field.style.display = '';
+            team2Field.style.display = '';
+        } else if (value === 'Multiple Teams') {
+            teamsField.style.display = '';
+        } else if (value === 'Individual vs Individual' || value === 'Multiple Individuals') {
+            individualsField.style.display = '';
+        }
+    }
+
+    updateVisibility();
+    formatSelect.addEventListener('change', updateVisibility);
+});
+</script>
+{% endblock %}

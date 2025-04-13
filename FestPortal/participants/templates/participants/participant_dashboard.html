@@ -1,78 +1,91 @@
-{% extends 'base_dashboard.html' %}
-{% load static %}
+{% extends 'participants/base_dashboard.html' %}
 
-{% block title %}Participant Dashboard{% endblock %}
+{% block title %}My Dashboard{% endblock %}
 
-{% block dashboard_content %}
-<div class="space-y-8">
+{% block sidebar_links %}
+  <li><a href="{% url 'participant_dashboard' %}" class="icon solid fa-home"> Dashboard</a></li>
+  <li><a href="{% url 'join_events' %}" class="icon solid fa-plus"> Join Events</a></li>
+  <li><a href="{% url 'participant_schedule' %}" class="icon solid fa-calendar"> Schedule</a></li>
+{% endblock %}
 
-  <!-- Welcome Message -->
-  <div class="bg-blue-100 border border-blue-300 p-4 rounded shadow-sm">
-    <h2 class="text-xl font-semibold">Welcome, {{ user.name }}</h2>
-    <p class="text-sm text-gray-600">Here's your fest overview.</p>
-  </div>
+{% block content %}
+<section class="max-w-7xl mx-auto mt-8 px-4">
+  <header class="major mb-6">
+    <h1 class="text-3xl font-semibold">Welcome, {{ user.name }}</h1>
+  </header>
 
-  <!-- My Details -->
-  <div class="bg-white p-5 border rounded shadow-sm">
-    <h3 class="text-lg font-medium mb-3">My Details</h3>
-    <ul class="list-group">
-      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
-      <li class="list-group-item"><strong>Gender:</strong> {{ user.gender }}</li>
-      <li class="list-group-item"><strong>DOB:</strong> {{ user.dob }}</li>
-      <li class="list-group-item"><strong>Mobile:</strong> {{ user.mobile }}</li>
-      <li class="list-group-item"><strong>College:</strong> {{ user.college.name }}</li>
+  <!-- Profile Card -->
+  <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+    <h3 class="text-xl font-semibold mb-4">My Profile</h3>
+    <ul class="space-y-2 text-gray-700">
+      <li><strong class="font-medium">Name:</strong> {{ user.name }}</li>
+      <li><strong class="font-medium">College:</strong> {{ user.college.name }}</li>
+      <li><strong class="font-medium">Email:</strong> {{ user.email }}</li>
+      <li><strong class="font-medium">Gender:</strong> {{ user.gender }}</li>
+      <li><strong class="font-medium">Date Of Birth:</strong> {{ user.dob }}</li>
+      <li><strong class="font-medium">Mobile:</strong> {{ user.mobile }}</li>
     </ul>
   </div>
 
-  <!-- Joined Events -->
-  <div class="bg-white p-5 border rounded shadow-sm">
-    <div class="flex justify-between items-center mb-3">
-      <h3 class="text-lg font-medium">My Events</h3>
-      <a href="{% url 'participant_schedule' %}" class="btn btn-outline-primary">View Schedule</a>
-    </div>
-    {% if events_joined %}
-    <ul class="list-group">
-      {% for event in events_joined %}
-      <li class="list-group-item d-flex justify-between align-items-center">
-        {{ event.sport.name }} - {{ event.gender }}
-        <a href="{% url 'view_my_team' event.id %}" class="btn btn-sm btn-outline-secondary">Team</a>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p class="text-muted">You haven't joined any events yet.</p>
-    {% endif %}
-    <a href="{% url 'join_event' %}" class="btn btn-primary mt-3">Join an Event</a>
-  </div>
-
-  <!-- College Mates -->
-  <div class="bg-white p-5 border rounded shadow-sm">
-    <h3 class="text-lg font-medium mb-3">Your College Mates</h3>
-    {% if college_mates %}
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-          <tr>
-            <th>Name</th>
-            <th>Gender</th>
-            <th>Email</th>
+  <!-- Events -->
+  <h2 class="text-2xl font-semibold mb-4">My Events</h2>
+  {% if events_joined %}
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-200">
+      <table class="min-w-full table-auto">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Sport</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Category</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Team</th>
           </tr>
         </thead>
         <tbody>
-          {% for mate in college_mates %}
-          <tr>
-            <td>{{ mate.name }}</td>
-            <td>{{ mate.gender }}</td>
-            <td>{{ mate.email }}</td>
+          {% for event in events_joined %}
+          <tr class="border-t border-gray-200">
+            <td class="px-6 py-4">{{ event.sport.name }}</td>
+            <td class="px-6 py-4">{{ event.get_gender_display }}</td>
+            <td class="px-6 py-4">
+              <a href="{% url 'view_my_team' event.id %}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">View Team</a>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <ul>
+      <li><a href="{% url 'all_leaderboards' %}" class="button">View All Leaderboards</a></li>
+      </ul>
     </div>
-    {% else %}
-    <p class="text-muted">No other participants from your college yet.</p>
-    {% endif %}
+  {% else %}
+    <p class="text-gray-600 italic">You haven't joined any events yet.</p>
+    <a href="{% url 'join_events' %}" class="inline-block mt-4 px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">Join an Event</a>
+  {% endif %}
+  <!-- Other Teams from My College -->
+<h2 class="text-2xl font-semibold mt-10 mb-4">Teams from My College</h2>
+{% if college_teams %}
+  <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-200">
+    <table class="min-w-full table-auto">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="px-6 py-3 text-left font-medium text-gray-700">Event</th>
+          <th class="px-6 py-3 text-left font-medium text-gray-700">Players</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in college_teams %}
+        <tr class="border-t border-gray-200">
+          <td class="px-6 py-4">{{ team.event.sport.name }} - {{ team.event.get_gender_display }}</td>
+          <td class="px-6 py-4">
+            {% for membership in team.teammembership_set.all %}
+              {{ membership.participant.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-
-</div>
+{% else %}
+  <p class="text-gray-600 italic">No other teams from your college yet.</p>
+{% endif %}
+</section>
 {% endblock %}

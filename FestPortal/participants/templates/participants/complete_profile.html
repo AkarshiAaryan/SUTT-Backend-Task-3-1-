@@ -1,63 +1,72 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base_dashboard.html' %}
 {% load static %}
+
 {% block title %}Complete Your Profile{% endblock %}
 
 {% block content %}
-<div class="container mt-5 max-w-2xl mx-auto">
-  <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200">
-    <h2 class="text-2xl font-bold mb-4 text-center">Complete Your Profile</h2>
+<section class="wrapper style1">
+  <div class="inner">
+    <header class="major">
+      <h2>Complete Your Profile</h2>
+    </header>
+
     <form method="POST" novalidate>
       {% csrf_token %}
 
-      <!-- Name -->
-      <div class="mb-4">
-        <label for="id_name" class="form-label">Full Name</label>
-        <input type="text" name="name" id="id_name" class="form-control" placeholder="Your Name" value="{{ form.name.value|default_if_none:'' }}">
-        {% if form.name.errors %}
-          <div class="text-sm text-red-500 mt-1">{{ form.name.errors.0 }}</div>
-        {% endif %}
-      </div>
+      <div class="row gtr-uniform">
+        <!-- Name -->
+        <div class="col-12">
+          <label for="id_name">Full Name</label>
+          <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}" placeholder="Your Name" />
+          {% if form.name.errors %}
+            <p class="text-danger">{{ form.name.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-      <!-- Gender -->
-      <div class="mb-4">
-        <label for="id_gender" class="form-label">Gender</label>
-        {{ form.gender|add_class:"form-select" }}
-        {% if form.gender.errors %}
-          <div class="text-sm text-red-500 mt-1">{{ form.gender.errors.0 }}</div>
-        {% endif %}
-      </div>
+        <!-- Gender -->
+        <div class="col-12">
+          <label for="id_gender">Gender</label>
+          {{ form.gender }}
+          {% if form.gender.errors %}
+            <p class="text-danger">{{ form.gender.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-      <!-- DOB -->
-      <div class="mb-4">
-        <label for="id_dob" class="form-label">Date of Birth</label>
-        <input type="date" name="dob" id="id_dob" class="form-control" value="{{ form.dob.value|default_if_none:'' }}">
-        {% if form.dob.errors %}
-          <div class="text-sm text-red-500 mt-1">{{ form.dob.errors.0 }}</div>
-        {% endif %}
-      </div>
+        <!-- DOB -->
+        <div class="col-12">
+          <label for="id_dob">Date of Birth</label>
+          <input type="date" name="dob" id="id_dob" value="{{ form.dob.value|default_if_none:'' }}" />
+          {% if form.dob.errors %}
+            <p class="text-danger">{{ form.dob.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-      <!-- Mobile -->
-      <div class="mb-4">
-        <label for="id_mobile" class="form-label">Mobile Number</label>
-        <input type="tel" name="mobile" id="id_mobile" class="form-control" placeholder="10-digit Mobile No." value="{{ form.mobile.value|default_if_none:'' }}">
-        {% if form.mobile.errors %}
-          <div class="text-sm text-red-500 mt-1">{{ form.mobile.errors.0 }}</div>
-        {% endif %}
-      </div>
+        <!-- Mobile -->
+        <div class="col-12">
+          <label for="id_mobile">Mobile Number</label>
+          <input type="tel" name="mobile" id="id_mobile" value="{{ form.mobile.value|default_if_none:'' }}" placeholder="10-digit Mobile No." />
+          {% if form.mobile.errors %}
+            <p class="text-danger">{{ form.mobile.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-      <!-- College -->
-      <div class="mb-4">
-        <label for="id_college" class="form-label">Select College</label>
-        {{ form.college|add_class:"form-select" }}
-        {% if form.college.errors %}
-          <div class="text-sm text-red-500 mt-1">{{ form.college.errors.0 }}</div>
-        {% endif %}
-      </div>
+        <!-- College -->
+        <div class="col-12">
+          <label for="id_college">Select College</label>
+          {{ form.college }}
+          {% if form.college.errors %}
+            <p class="text-danger">{{ form.college.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-      <div class="text-center mt-5">
-        <button type="submit" class="btn btn-primary px-5 py-2 rounded shadow-sm">Submit</button>
+        <!-- Submit -->
+        <div class="col-12">
+          <ul class="actions">
+            <li><input type="submit" value="Submit" class="primary" /></li>
+          </ul>
+        </div>
       </div>
     </form>
   </div>
-</div>
+</section>
 {% endblock %}

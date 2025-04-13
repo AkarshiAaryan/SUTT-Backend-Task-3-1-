@@ -1,82 +1,55 @@
-{% extends 'base_dashboard.html' %}
-{% load static %}
+{% extends 'participants/base_dashboard.html' %}
+
+{% block title %}Organizer Dashboard{% endblock %}
+
+{% block sidebar_links %}
+  <li><a href="{% url 'organizer_dashboard' %}" class="icon fa-home text-gray-700 hover:text-gray-900"> Dashboard</a></li>
+  <li><a href="{% url 'match_list' %}" class="icon fa-list text-gray-700 hover:text-gray-900"> Matches</a></li>
+  <li><a href="{% url 'upload_matches' %}" class="icon fa-upload text-gray-700 hover:text-gray-900"> Upload Matches (Excel)</a></li>
+  <li><a href="{% url 'view_feedbacks' %}" class="icon fa-comment text-gray-700 hover:text-gray-900"> Feedbacks</a></li>
+  <li><a href="{% url 'logout' %}" class="icon fa-sign-out text-gray-700 hover:text-gray-900"> Logout</a></li>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2 class="mb-4">Organizer Dashboard</h2>
+<section class="max-w-5xl mx-auto px-4 mt-8">
+  <header class="major">
+    <h1 class="text-3xl font-semibold mb-6">Organizer Dashboard</h1>
+  </header>
 
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="card shadow-sm p-4 text-center">
-        <h5>Total Participants</h5>
-        <h2>{{ total_participants }}</h2>
+  <!-- Quick Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+      <div class="flex items-center space-x-4">
+        <i class="fa fa-users text-3xl text-gray-600"></i>
+        <div>
+          <h3 class="text-lg font-medium">Total Participants</h3>
+          <p class="text-xl font-semibold">{{ total_participants }}</p>
+        </div>
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="card shadow-sm p-4 text-center">
-        <h5>Colleges Participated</h5>
-        <h2>{{ total_colleges }}</h2>
+    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+      <div class="flex items-center space-x-4">
+        <i class="fa fa-university text-3xl text-gray-600"></i>
+        <div>
+          <h3 class="text-lg font-medium">Colleges</h3>
+          <p class="text-xl font-semibold">{{ total_colleges }}</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <hr>
+  <!-- Quick Actions -->
+  <div class="flex justify-start space-x-4">
 
-  <h4 class="mb-3">Participants</h4>
-  <input class="form-control mb-2" id="participantSearch" placeholder="Search participants...">
-  <table class="table table-bordered table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Gender</th>
-        <th>College</th>
-      </tr>
-    </thead>
-    <tbody id="participantTable">
-      {% for p in participants %}
-      <tr>
-        <td>{{ p.name }}</td>
-        <td>{{ p.email }}</td>
-        <td>{{ p.gender }}</td>
-        <td>{{ p.college.name }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <a href="{% url 'match_list' %}" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"> 📋 Manage Matches</a>
+    <a href="{% url 'create_match' %}" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">➕ Create Match</a>
+    <br><br>
 
-  <hr>
+    <ul>
+      <li><a href="{% url 'create_leaderboard' %}" class="button">Create Leaderboard</a></li>
+      <li><a href="{% url 'all_leaderboards' %}" class="button">View All Leaderboards</a></li>
+    </ul>
 
-  <h4 class="mb-3">Colleges</h4>
-  <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>College Name</th>
-        <th>No. of Participants</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for college in colleges %}
-      <tr>
-        <td>{{ college.name }}</td>
-        <td>{{ college.num_participants }}</td>
-        <td><a class="btn btn-primary btn-sm" href="{% url 'college_participants' college.id %}">View Participants</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<script>
-  const searchInput = document.getElementById('participantSearch');
-  const tableRows = document.querySelectorAll('#participantTable tr');
-
-  searchInput.addEventListener('input', () => {
-    const value = searchInput.value.toLowerCase();
-    tableRows.forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
-    });
-  });
-</script>
+  </div>
+</section>
 {% endblock %}

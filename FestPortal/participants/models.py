@@ -24,10 +24,16 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=15, null=True, blank=True)
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
     is_organizer = models.BooleanField(default=False)
+    is_participant = models.BooleanField(default=True)
     profile_complete = models.BooleanField(default=False)
+    is_banned = models.BooleanField(default=False)
 
     def __str__(self):
         return self.email or self.username
+
+    def is_profile_complete(self):
+        required_fields = [self.name, self.gender, self.dob, self.mobile, self.college]
+        return all(required_fields)
 
 
 # Events
@@ -48,6 +54,7 @@ class Event(models.Model):
 class Team(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     college = models.ForeignKey(College, on_delete=models.CASCADE)
+    captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='captained_teams')
 
     def __str__(self):
         return f"{self.college.name} - {self.event}"
@@ -55,6 +62,7 @@ class Team(models.Model):
 class TeamMembership(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     participant = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_approved = models.BooleanField(default=False)
 
 
 #Matches
@@ -119,3 +127,37 @@ class Match(models.Model):
 
     def __str__(self):
         return f"{self.event.sport.name} | {self.get_format_display()} | {self.start_time.strftime('%Y-%m-%d %H:%M')}"
+
+#Feedback system
+# models.py
+
+class Feedback(models.Model):
+    participant = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organizer': False})
+    message = models.TextField()
+    image = models.ImageField(upload_to='feedback_images/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.participant.name or self.participant.email}"
+
+#LeaderBoard
+
+
+class Leaderboard(models.Model):
+    name = models.CharField(max_length=100)  # 'Overall', 'Football', etc.
+    event = models.ForeignKey(Event, null=True, blank=True, on_delete=models.SET_NULL)
+    is_overall = models.BooleanField(default=False)
+    uploaded_excel = models.FileField(upload_to='leaderboards/excels/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class LeaderboardEntry(models.Model):
+    leaderboard = models.ForeignKey(Leaderboard, on_delete=models.CASCADE, related_name='entries')
+    college = models.ForeignKey(College, on_delete=models.CASCADE)
+    points = models.PositiveIntegerField()
+    rank = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['rank']

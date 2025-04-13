@@ -1,0 +1,21 @@
+{% extends 'participants/base_dashboard.html' %}
+{% block title %}Approve Team Members{% endblock %}
+{% block content %}
+<h2>Approve Join Requests for {{ team.event }}</h2>
+<form method="post">
+  {% csrf_token %}
+  <ul>
+    {% for req in pending %}
+      <li>
+        <label>
+          <input type="checkbox" name="approved" value="{{ req.participant.id }}">
+          {{ req.participant.name }} ({{ req.participant.email }})
+        </label>
+      </li>
+    {% empty %}
+      <p>No pending requests.</p>
+    {% endfor %}
+  </ul>
+  <button type="submit" class="button">Approve Selected</button>
+</form>
+{% endblock %}

@@ -1,14 +1,21 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base.html' %}
 {% block content %}
-<div class="container mt-4">
-  <h4>My Team – {{ event.sport.name }} ({{ event.gender }})</h4>
-  <ul class="list-group mt-3">
+<div class="max-w-3xl mx-auto mt-8 px-4">
+  <h2 class="text-2xl font-semibold mb-4">My Team – {{ event.sport.name }} ({{ event.gender }})</h2>
+  {% if user == team.captain %}
+    <a href="{% url 'approve_team_members' team.id %}" class="button small">Approve Join Requests</a>
+  {% endif %}
+  <ul class="divide-y divide-gray-200 rounded-lg border border-gray-300 bg-white">
     {% for m in members %}
-      <li class="list-group-item">
-        {{ m.participant.name }} ({{ m.participant.email }})
+      <li class="p-4 flex justify-between items-center">
+        <span>{{ m.participant.name }}</span>
+        <span class="text-sm text-gray-500">({{ m.participant.email }})</span>
       </li>
+    {% empty %}
+      <li class="p-4 text-gray-500 italic">No members in your team yet.</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'participant_dashboard' %}" class="btn btn-secondary mt-3">Back</a>
+
+  <a href="{% url 'participant_dashboard' %}" class="inline-block mt-6 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 transition duration-300">Back</a>
 </div>
 {% endblock %}

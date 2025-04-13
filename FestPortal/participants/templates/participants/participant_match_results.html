@@ -1,56 +1,64 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base_dashboard.html' %}
+
 {% block title %}My Match Results{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h3 class="mb-4">Match Results</h3>
+<div class="container max-w-7xl mx-auto mt-8 px-4">
+  <h3 class="text-3xl font-semibold mb-6">Match Results</h3>
 
   {% if matches %}
-    <table class="table table-bordered table-hover">
-      <thead class="table-dark">
-        <tr>
-          <th>Event</th>
-          <th>Match Format</th>
-          <th>Teams / Participants</th>
-          <th>Time</th>
-          <th>Status</th>
-          <th>View</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for match in matches %}
-        <tr>
-          <td>{{ match.event.sport.name }} ({{ match.event.gender }})</td>
-          <td>{{ match.get_format_display }}</td>
-          <td>
-            {% if match.format == 'teamvsteam' %}
-              {{ match.team1.college.name }} vs {{ match.team2.college.name }}
-            {% elif match.format == 'individualvindividual' %}
-              {% for person in match.individuals.all %}
-                {{ person.name }}{% if not forloop.last %} vs {% endif %}
-              {% endfor %}
-            {% elif match.format == 'team_multi' %}
-              {% for team in match.teams.all %}
-                {{ team.college.name }}{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            {% elif match.format == 'individual_multi' %}
-              {% for person in match.individuals.all %}
-                {{ person.name }}{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            {% endif %}
-          </td>
-          <td>{{ match.start_time|date:"M d, H:i" }} - {{ match.end_time|date:"H:i" }}</td>
-          <td><span class="badge bg-success">{{ match.status }}</span></td>
-          <td>
-            <a href="{% url 'match_detail' match.id %}" class="btn btn-sm btn-outline-info">View</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-200">
+      <table class="min-w-full table-auto">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Event</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Match Format</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Teams / Participants</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Time</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">Status</th>
+            <th class="px-6 py-3 text-left font-medium text-gray-700">View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for match in matches %}
+          <tr class="border-t border-gray-200">
+            <td class="px-6 py-4">{{ match.event.sport.name }} ({{ match.event.gender }})</td>
+            <td class="px-6 py-4">{{ match.get_format_display }}</td>
+            <td class="px-6 py-4">
+              {% if match.format == 'teamvsteam' %}
+                {{ match.team1.college.name }} vs {{ match.team2.college.name }}
+              {% elif match.format == 'individualvindividual' %}
+                {% for person in match.individuals.all %}
+                  {{ person.name }}{% if not forloop.last %} vs {% endif %}
+                {% endfor %}
+              {% elif match.format == 'team_multi' %}
+                {% for team in match.teams.all %}
+                  {{ team.college.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% elif match.format == 'individual_multi' %}
+                {% for person in match.individuals.all %}
+                  {{ person.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% endif %}
+            </td>
+            <td class="px-6 py-4">{{ match.start_time|date:"M d, H:i" }} - {{ match.end_time|date:"H:i" }}</td>
+            <td class="px-6 py-4">
+              <span class="inline-block px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
+                {{ match.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <a href="{% url 'match_detail' match.id %}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% else %}
-    <div class="alert alert-info">No completed matches found for your events or college.</div>
+    <div class="bg-blue-100 text-blue-700 p-4 rounded-md mt-6">
+      No completed matches found for your events or college.
+    </div>
   {% endif %}
 </div>
 {% endblock %}
-

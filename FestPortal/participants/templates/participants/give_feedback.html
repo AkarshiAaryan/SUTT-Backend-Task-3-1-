@@ -1,0 +1,33 @@
+{% extends 'participants/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Submit Feedback{% endblock %}
+
+{% block content %}
+<section class="wrapper">
+  <div class="inner">
+    <header class="major">
+      <h2>Submit Feedback</h2>
+    </header>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="fields">
+        <div class="field">
+          <label for="id_message">Your Message <span style="color: red;">*</span></label>
+          {{ form.message }}
+        </div>
+
+        <div class="field">
+          <label for="id_image">Optional Image</label>
+          {{ form.image }}
+        </div>
+      </div>
+
+      <ul class="actions">
+        <li><input type="submit" value="Submit Feedback" class="primary" /></li>
+      </ul>
+    </form>
+  </div>
+</section>
+{% endblock %}

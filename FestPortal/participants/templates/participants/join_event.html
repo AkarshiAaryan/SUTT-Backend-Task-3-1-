@@ -1,30 +1,35 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base.html' %}
 {% block title %}Join Event{% endblock %}
 
-{% block dashboard_content %}
-<div class="bg-white p-6 rounded shadow-sm">
-  <h2 class="text-xl font-semibold mb-4">Available Events</h2>
+{% block content %}
+<section class="wrapper">
+  <div class="inner">
+    <header class="major">
+      <h2>Available Events</h2>
+    </header>
 
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-  {% endfor %}
-  {% endif %}
-
-  {% if available_events %}
-  <form method="POST" class="space-y-4">
-    {% csrf_token %}
-    <div class="grid gap-4">
-      {% for event in available_events %}
-      <div class="flex justify-between items-center border rounded p-3">
-        <span>{{ event.sport.name }} - {{ event.gender }} (Max Team Size: {{ event.max_team_size }})</span>
-        <button name="event_id" value="{{ event.id }}" class="btn btn-success btn-sm">Join</button>
-      </div>
+    {% if messages %}
+      {% for message in messages %}
+        <p class="text">{{ message }}</p>
       {% endfor %}
-    </div>
-  </form>
-  {% else %}
-  <p class="text-muted">No eligible events available at the moment.</p>
-  {% endif %}
-</div>
+    {% endif %}
+
+    {% if available_events %}
+    <form method="POST">
+      {% csrf_token %}
+      <div class="fields">
+        {% for event in available_events %}
+        <div class="field">
+          <strong>{{ event.sport.name }} - {{ event.gender }}</strong>
+          (Max Team Size: {{ event.max_team_size }})
+          <button name="event_id" value="{{ event.id }}" class="button small">Join</button>
+        </div>
+        {% endfor %}
+      </div>
+    </form>
+    {% else %}
+      <p>No eligible events available at the moment.</p>
+    {% endif %}
+  </div>
+</section>
 {% endblock %}

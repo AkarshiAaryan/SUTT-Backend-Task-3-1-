@@ -1,17 +1,43 @@
-<h2>Your Upcoming Matches</h2>
-<ul>
-    {% for match in my_events %}
-        <li>{{ match.event }} | {{ match.start_time }} → {{ match.end_time }} @ {{ match.location }}</li>
-    {% empty %}
-        <li>No upcoming matches for you.</li>
-    {% endfor %}
-</ul>
+{% extends 'participants/base.html' %}
 
-<h2>🏫 Other Matches for Your College</h2>
-<ul>
-    {% for match in college_matches %}
-        <li>{{ match.event }} | {{ match.start_time }} → {{ match.end_time }} @ {{ match.location }}</li>
-    {% empty %}
-        <li>No other upcoming matches for your college.</li>
-    {% endfor %}
-</ul>
+{% block content %}
+<div class="min-h-screen bg-gray-100 py-10 px-4">
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">🕒 Your Upcoming Matches</h2>
+    {% if my_events %}
+      <ul class="space-y-4">
+        {% for match in my_events %}
+          <li class="bg-blue-50 p-4 rounded shadow-sm border border-blue-200">
+            <div class="text-lg font-medium text-blue-800">{{ match.event }}</div>
+            <div class="text-gray-600">
+              {{ match.start_time|date:"F j, Y, g:i a" }} → {{ match.end_time|date:"g:i a" }}<br>
+              📍 <span class="font-semibold">{{ match.location }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500 italic">No upcoming matches for you.</p>
+    {% endif %}
+
+    <h2 class="text-2xl font-semibold text-gray-800 mt-10 mb-6 border-b pb-2">🏫 Other Matches for Your College</h2>
+    {% if college_matches %}
+      <ul class="space-y-4">
+        {% for match in college_matches %}
+          <li class="bg-yellow-50 p-4 rounded shadow-sm border border-yellow-200">
+            <div class="text-lg font-medium text-yellow-800">{{ match.event }}</div>
+            <div class="text-gray-600">
+              {{ match.start_time|date:"F j, Y, g:i a" }} → {{ match.end_time|date:"g:i a" }}<br>
+              📍 <span class="font-semibold">{{ match.location }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500 italic">No other upcoming matches for your college.</p>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,46 +1,41 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base_dashboard.html' %}
+
 {% block content %}
-<div class="container mt-4">
-  <h3>All Teams</h3>
+<div class="max-w-7xl mx-auto mt-8 px-4">
+  <h3 class="text-2xl font-semibold mb-6">All Teams</h3>
 
   <!-- Filters -->
-  <form method="get" class="row g-3 my-3">
-    <div class="col-md-3">
-      <input type="text" name="sport" class="form-control" placeholder="Filter by Sport" value="{{ request.GET.sport }}">
-    </div>
-    <div class="col-md-3">
-      <input type="text" name="gender" class="form-control" placeholder="Filter by Gender" value="{{ request.GET.gender }}">
-    </div>
-    <div class="col-md-3">
-      <input type="text" name="college" class="form-control" placeholder="Filter by College" value="{{ request.GET.college }}">
-    </div>
-    <div class="col-md-3">
-      <button type="submit" class="btn btn-primary">Apply Filters</button>
-    </div>
+  <form method="get" class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+    <input type="text" name="sport" class="p-2 border border-gray-300 rounded-md" placeholder="Filter by Sport" value="{{ request.GET.sport }}">
+    <input type="text" name="gender" class="p-2 border border-gray-300 rounded-md" placeholder="Filter by Gender" value="{{ request.GET.gender }}">
+    <input type="text" name="college" class="p-2 border border-gray-300 rounded-md" placeholder="Filter by College" value="{{ request.GET.college }}">
+    <button type="submit" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">Apply Filters</button>
   </form>
 
-  <table class="table table-bordered table-hover mt-3">
-    <thead>
-      <tr>
-        <th>Sport</th>
-        <th>Event Gender</th>
-        <th>College</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for team in teams %}
-      <tr>
-        <td>{{ team.event.sport.name }}</td>
-        <td>{{ team.event.gender }}</td>
-        <td>{{ team.college.name }}</td>
-        <td>
-          <a href="{% url 'team_players' team.id %}" class="btn btn-sm btn-outline-primary">View Players</a>
-          <a href="{% url 'college_events' team.college.id %}" class="btn btn-sm btn-outline-secondary">College Events</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-200">
+    <table class="min-w-full table-auto">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="px-4 py-2 text-left font-medium text-gray-700">Sport</th>
+          <th class="px-4 py-2 text-left font-medium text-gray-700">Event Gender</th>
+          <th class="px-4 py-2 text-left font-medium text-gray-700">College</th>
+          <th class="px-4 py-2 text-left font-medium text-gray-700">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+        <tr class="border-t border-gray-200">
+          <td class="px-4 py-2">{{ team.event.sport.name }}</td>
+          <td class="px-4 py-2">{{ team.event.gender }}</td>
+          <td class="px-4 py-2">{{ team.college.name }}</td>
+          <td class="px-4 py-2">
+            <a href="{% url 'team_players' team.id %}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">View Players</a>
+            <a href="{% url 'college_events' team.college.id %}" class="inline-block px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition ml-2">College Events</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

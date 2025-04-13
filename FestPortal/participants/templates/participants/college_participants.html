@@ -1,30 +1,37 @@
-{% extends 'base_dashboard.html' %}
+{% extends 'participants/base.html' %}
+
+{% block title %}{{ college.name }} Participants{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h3>Participants from {{ college.name }}</h3>
-  <table class="table table-bordered mt-4">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Gender</th>
-        <th>DOB</th>
-        <th>Mobile</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in participants %}
-      <tr>
-        <td>{{ p.name }}</td>
-        <td>{{ p.email }}</td>
-        <td>{{ p.gender }}</td>
-        <td>{{ p.dob }}</td>
-        <td>{{ p.mobile }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <a href="{% url 'organizer_dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
-</div>
+<section class="wrapper style1">
+  <div class="inner">
+    <header class="major">
+      <h2>{{ college.name }} Participants</h2>
+      <p><a href="{% url 'organizer_dashboard' %}">← Back to Dashboard</a></p>
+    </header>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Events</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in participants %}
+          <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.get_gender_display }}</td>
+            <td>{{ p.events_joined.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 {% endblock %}
