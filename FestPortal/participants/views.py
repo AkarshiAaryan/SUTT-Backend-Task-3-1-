@@ -278,21 +278,20 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import MatchCreateForm
 
-
 @organizer_required
 def create_match(request):
     if request.method == 'POST':
         form = MatchCreateForm(request.POST)
         if form.is_valid():
             match = form.save(commit=False)
-            match.save()  # Save first to generate match.id
-            form.save_m2m()  # Now save many-to-many fields
+            match.save()
+            form.save_m2m()
             messages.success(request, "Match created successfully.")
             return redirect('match_list')
     else:
         form = MatchCreateForm()
-    return render(request, 'participants/create_match.html', {'form': form})
 
+    return render(request, 'participants/create_match.html', {'form': form})
 
 
 

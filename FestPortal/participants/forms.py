@@ -10,8 +10,13 @@ class CompleteProfileForm(forms.ModelForm):
                 }
 
 
-from .models import Match, Event, Team, User
 from .models import Match, Team, User
+from django.contrib.auth import get_user_model
+from django import forms
+
+
+User = get_user_model()
+
 
 class MatchCreateForm(forms.ModelForm):
     class Meta:
@@ -23,6 +28,8 @@ class MatchCreateForm(forms.ModelForm):
         widgets = {
             'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'teams': forms.CheckboxSelectMultiple(),
+            'individuals': forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -31,12 +38,10 @@ class MatchCreateForm(forms.ModelForm):
         self.fields['team2'].queryset = Team.objects.all()
         self.fields['teams'].queryset = Team.objects.all()
         self.fields['individuals'].queryset = User.objects.filter(is_organizer=False)
-
         self.fields['team1'].required = False
         self.fields['team2'].required = False
         self.fields['teams'].required = False
         self.fields['individuals'].required = False
-
 
 
 class MatchResultForm(forms.ModelForm):

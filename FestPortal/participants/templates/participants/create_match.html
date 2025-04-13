@@ -7,33 +7,48 @@
   <h2 class="text-2xl font-semibold mb-4">Create New Match</h2>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="button primary">Create Match</button>
+
+    <div id="field_event">{{ form.event.label_tag }} {{ form.event }}</div>
+    <div id="field_format">{{ form.format.label_tag }} {{ form.format }}</div>
+
+    <div id="field_team1">{{ form.team1.label_tag }} {{ form.team1 }}</div>
+    <div id="field_team2">{{ form.team2.label_tag }} {{ form.team2 }}</div>
+
+    <div id="field_teams">{{ form.teams.label_tag }} {{ form.teams }}</div>
+    <div id="field_individuals">{{ form.individuals.label_tag }} {{ form.individuals }}</div>
+
+    <div>{{ form.start_time.label_tag }} {{ form.start_time }}</div>
+    <div>{{ form.end_time.label_tag }} {{ form.end_time }}</div>
+    <div>{{ form.location.label_tag }} {{ form.location }}</div>
+
+    <button type="submit" class="button primary mt-4">Create Match</button>
   </form>
 </section>
 {% endblock %}
+
 {% block extra_scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const formatSelect = document.getElementById('id_format');
-    const team1Field = document.getElementById('id_team1').closest('p');
-    const team2Field = document.getElementById('id_team2').closest('p');
-    const teamsField = document.getElementById('id_teams').closest('p');
-    const individualsField = document.getElementById('id_individuals').closest('p');
+    const team1Field = document.getElementById('field_team1');
+    const team2Field = document.getElementById('field_team2');
+    const teamsField = document.getElementById('field_teams');
+    const individualsField = document.getElementById('field_individuals');
 
     function updateVisibility() {
-        const value = formatSelect.options[formatSelect.selectedIndex].text;
+        const value = formatSelect.value;
+
         team1Field.style.display = 'none';
         team2Field.style.display = 'none';
         teamsField.style.display = 'none';
         individualsField.style.display = 'none';
 
-        if (value === 'Team vs Team') {
+        if (value === 'teamvsteam') {
             team1Field.style.display = '';
             team2Field.style.display = '';
-        } else if (value === 'Multiple Teams') {
+        } else if (value === 'team_multi') {
             teamsField.style.display = '';
-        } else if (value === 'Individual vs Individual' || value === 'Multiple Individuals') {
+        } else if (value === 'individualvindividual' || value === 'individual_multi') {
             individualsField.style.display = '';
         }
     }

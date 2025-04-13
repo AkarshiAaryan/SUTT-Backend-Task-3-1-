@@ -71,6 +71,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from .models import Event, Team, User
 
+from django.db import models
+from django.core.exceptions import ValidationError
+
 class Match(models.Model):
     FORMAT_CHOICES = [
         ('teamvsteam', 'Team vs Team'),
@@ -92,23 +95,18 @@ class Match(models.Model):
         ('Cancelled', 'Cancelled'),
     ]
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
     format = models.CharField(max_length=30, choices=FORMAT_CHOICES, default='teamvsteam')
 
-    # For team-based matches
-    team1 = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True, related_name='team1_matches')
-    team2 = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True, related_name='team2_matches')
+    team1 = models.ForeignKey('Team', on_delete=models.SET_NULL, null=True, blank=True, related_name='team1_matches')
+    team2 = models.ForeignKey('Team', on_delete=models.SET_NULL, null=True, blank=True, related_name='team2_matches')
+    teams = models.ManyToManyField('Team', blank=True)
+    individuals = models.ManyToManyField('User', blank=True)
 
-    # For multi-team or individual events
-    teams = models.ManyToManyField(Team, blank=True)
-    individuals = models.ManyToManyField(User, blank=True)
-
-    # Timing and location
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     location = models.CharField(max_length=100, blank=True)
 
-    # Status and outcome
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Scheduled')
     result = models.CharField(max_length=20, choices=RESULT_CHOICES, null=True, blank=True)
     team1_score = models.CharField(max_length=50, null=True, blank=True)
