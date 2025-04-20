@@ -127,7 +127,6 @@ class Match(models.Model):
         return f"{self.event.sport.name} | {self.get_format_display()} | {self.start_time.strftime('%Y-%m-%d %H:%M')}"
 
 #Feedback system
-# models.py
 
 class Feedback(models.Model):
     participant = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organizer': False})
